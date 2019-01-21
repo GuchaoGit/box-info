@@ -4,6 +4,7 @@
 #include <json-c/json.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/time.h>
 #include "box_info.h"
 #include "net_speed.h"
 
@@ -180,6 +181,22 @@ char *get_net_speed(char *eth)
 	return pnetspeed;
 }
 
+void get_sys_time()
+{
+	struct timeval tv;
+
+	struct timezone tz;
+
+	gettimeofday(&tv, &tz);
+
+
+	long time = ((long)tv.tv_sec)*1000+(long)tv.tv_usec/1000; 
+
+	printf("tv_sec:%ld\n",tv.tv_sec);
+	printf("tv_usec:%ld\n",tv.tv_usec);
+	printf("time : %ld\n",time);
+}
+
 const char *getDeviceJsonString(char *eth)
 {
 	struct json_object *root = json_object_new_object();
@@ -221,6 +238,7 @@ const char *getDeviceJsonString(char *eth)
 	time(&t);
 	json_object_object_add(params, "runtime", json_object_new_double(t * 1000));	//unix time stamp
 
+	get_sys_time();
 	json_object_object_add(root, "parmas", params);
 
 	return json_object_to_json_string(root);
